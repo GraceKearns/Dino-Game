@@ -1,6 +1,8 @@
 import threading
+import time
 import tkinter as tk
 from PIL import ImageTk, Image
+import keyboard
 Image.MAX_IMAGE_PIXELS = None
 
 import random
@@ -15,6 +17,7 @@ class Game:
             self.title = title
     def __init__(self):
         self.firstInit = True
+        self.yValue = 0;
         self.window = tk.Tk(className="Tah")
         window_width = 640
         window_height= 480
@@ -33,14 +36,15 @@ class Game:
         self.properties()
         self.panel.place(x=0,y=0)
         self.update()
-        self.window.bind('<KeyPress>', self.onKeyPress)
+
         self.window.mainloop()
     def properties(self):
         self.currentItems = []
         
         
         
-
+    def setYValue(self,value):
+        self.yValue = value
     def update(self):
         if self.firstInit:
             self.firstInit = False
@@ -56,6 +60,25 @@ class Game:
         self.panel.move("asset1",-10,0)
         self.panel.move("asset2",-10,0)
         self.panel.move("bomb",-10,0)
+        
+
+        keyboard.on_press_key("space", lambda _:self.setYValue(-10))
+        keyboard.on_release_key("space", lambda _:self.setYValue(10))
+        print(self.panel.bbox("dino")[1])
+        if self.panel.bbox("dino")[1] <= 360:
+            self.panel.move("dino",0,self.yValue)
+        else:
+            self.setYValue(0)
+            self.panel.moveto("dino",50,360)
+        if self.panel.bbox("dino")[1] >= 270:
+            self.panel.move("dino",0,self.yValue)
+        else:
+            self.setYValue(0)
+            self.panel.moveto("dino",50,270)
+
+            
+        
+
         if self.panel.bbox("bomb")[0] + 20 > self.panel.bbox("dino")[0] and self.panel.bbox("bomb")[0] - 20 < self.panel.bbox("dino")[0]:
             exit()
         if self.panel.bbox("asset1")[0] < 0:
@@ -74,9 +97,7 @@ class Game:
        
     def placeImage(self,imageData,width,height,x,y,panel,tags="nil"):
         f = panel.create_image(x,y, anchor=tk.NW,image=imageData,tags=tags)
-    def onKeyPress(self,event):
-        
-        self.panel.move("asset1",random.randint(self.panel.bbox("dino")[0],40))
+
 
 
 # ground = tk.Canvas(window, image = img2)
