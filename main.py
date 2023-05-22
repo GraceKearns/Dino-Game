@@ -16,6 +16,7 @@ class Game:
             self.xValue = x
             self.title = title
     def __init__(self):
+        self.letDrop = False
         self.firstInit = True
         self.yValue = 0;
         self.window = tk.Tk(className="Tah")
@@ -44,15 +45,30 @@ class Game:
         
         
     def setYValue(self,value):
+        if self.panel.bbox("dino")[1] > 270 and self.panel.bbox("dino")[1] < 360:
+            self.yValue = 10
+            return
+        if self.panel.bbox("dino")[1] == 270:
+            self.letDrop = True
+            self.yValue = 10
+            return
+        if self.panel.bbox("dino")[1] >= 360:
+            self.letDrop = False
+            self.yValue = value
+            self.panel.moveto("dino",50,360)
+            return
+        if self.letDrop == True:
+            self.yValue = 10
+            
+            return
+        
         self.yValue = value
     def update(self):
         if self.firstInit:
             self.firstInit = False
             self.placeImage(imageData=self.imageList[2],width=0,height=0,x=560,y=369,panel=self.panel,tags="asset1")
-
             self.placeImage(imageData=self.imageList[2],width=0,height=0,x=500,y=369,panel=self.panel,tags="asset2")
             self.placeImage(imageData=self.imageList[3],width=0,height=0,x=640,y=369,panel=self.panel,tags="bomb")
-           
         max_frames = 125 # 25*5
         current_frame = 1
         while current_frame <= max_frames:
@@ -60,26 +76,30 @@ class Game:
         self.panel.move("asset1",-10,0)
         self.panel.move("asset2",-10,0)
         self.panel.move("bomb",-10,0)
-        
-
-        keyboard.on_press_key("space", lambda _:self.setYValue(-10))
-        keyboard.on_release_key("space", lambda _:self.setYValue(10))
+        keyboard.on_press_key("space", lambda _:self.setYValue(-10),True)
+        keyboard.on_release_key("space", lambda _:self.setYValue(10),True)
         print(self.panel.bbox("dino")[1])
+
         if self.panel.bbox("dino")[1] <= 360:
             self.panel.move("dino",0,self.yValue)
+           
         else:
+            
             self.setYValue(0)
             self.panel.moveto("dino",50,360)
         if self.panel.bbox("dino")[1] >= 270:
+          
             self.panel.move("dino",0,self.yValue)
+         
         else:
             self.setYValue(0)
+           
             self.panel.moveto("dino",50,270)
 
             
         
 
-        if self.panel.bbox("bomb")[0] + 20 > self.panel.bbox("dino")[0] and self.panel.bbox("bomb")[0] - 20 < self.panel.bbox("dino")[0]:
+        if self.panel.bbox("bomb")[0] + 20 > self.panel.bbox("dino")[0] and self.panel.bbox("bomb")[0] - 20 < self.panel.bbox("dino")[0] and self.panel.bbox("bomb")[1] - 10 < self.panel.bbox("dino")[1] and self.panel.bbox("bomb")[1] + 10 > self.panel.bbox("dino")[1]:
             exit()
         if self.panel.bbox("asset1")[0] < 0:
             self.panel.move("asset1",random.randint(650,800),0) 
