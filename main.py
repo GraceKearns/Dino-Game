@@ -19,7 +19,7 @@ class Game:
         self.letDrop = False
         self.firstInit = True
         self.yValue = 0;
-        self.window = tk.Tk(className="Tah")
+        self.window = tk.Tk(className="Dino Game 1.0")
         window_width = 640
         window_height= 480
         self.loadImageLibrary()
